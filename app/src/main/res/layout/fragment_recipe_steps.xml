@@ -1,0 +1,37 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context="com.example.android.letsbake.fragments.RecipeStepsFragment">
+
+    <RelativeLayout
+        android:id="@+id/rl_player"
+        android:layout_width="match_parent"
+        android:layout_height="250dp"
+        android:layout_marginBottom="16dp">
+
+    <com.google.android.exoplayer2.ui.SimpleExoPlayerView
+        android:id="@+id/player_step"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@android:color/background_dark"/>
+
+    <ImageView
+        android:id="@+id/iv_step_placeholder"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:src="@drawable/ic_baking_placeholder"/>
+
+</RelativeLayout>
+
+    <TextView
+        android:id="@+id/tv_step_description"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/rounded_corner"
+        android:textSize="16sp"
+        android:padding="8dp"
+        />
+
+</LinearLayout>

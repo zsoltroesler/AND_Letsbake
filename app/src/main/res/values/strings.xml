@@ -1,0 +1,19 @@
+<resources>
+    <string name="app_name">Let\'s bake</string>
+
+    <string name="servings">Servings for %1$d</string>
+    <string name="ingredient_format">%1$s\u0020\u0020\u0028%2$s\u0020%3$s\u0029</string>
+    <string name="step_format">%1$s\u0029\u0020</string>
+    <string name="step_number">Step %1$d of %2$d</string>
+
+
+    <string name="button_previous">Previous</string>
+    <string name="button_next">Next</string>
+
+    <!--Toast messages-->
+    <string name="problem_occurred">Problem occurred.</string>
+    <string name="internet_connection">Please check your internet connection!</string>
+
+
+
+</resources>
