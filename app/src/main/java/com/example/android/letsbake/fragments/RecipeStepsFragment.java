@@ -103,10 +103,9 @@ public class RecipeStepsFragment extends Fragment implements Player.EventListene
         stepVideoUrl = step.getStepVideoUrl();
         stepThumbnailUrl = step.getStepThumbnailUrl();
 
-        exoPlayerPosition = C.TIME_UNSET;
-
-        if (savedInstanceState == null) {
-
+        if (savedInstanceState != null) {
+            exoPlayerPosition = savedInstanceState.getLong(PLAYER_POSITION, C.TIME_UNSET);
+        } else {
             if (!stepVideoUrl.isEmpty()) {
                 // Hide the placeholder image
                 placeholderImage.setVisibility(View.GONE);
@@ -127,8 +126,6 @@ public class RecipeStepsFragment extends Fragment implements Player.EventListene
                         .error(R.drawable.ic_baking_placeholder)
                         .into(placeholderImage);
             }
-        } else {
-            exoPlayerPosition = savedInstanceState.getLong(PLAYER_POSITION, C.TIME_UNSET);
         }
         return view;
 }
@@ -156,10 +153,9 @@ public class RecipeStepsFragment extends Fragment implements Player.EventListene
             String userAgent = Util.getUserAgent(getActivity(), LOG_TAG);
             MediaSource mediaSource = new ExtractorMediaSource(videoUri, new DefaultDataSourceFactory(
                     getActivity(), userAgent), new DefaultExtractorsFactory(), null, null);
-            if (exoPlayerPosition != C.TIME_UNSET) exoPlayer.seekTo(exoPlayerPosition);
             exoPlayer.prepare(mediaSource);
             exoPlayer.setPlayWhenReady(true);
-            //exoPlayer.seekTo(exoPlayerPosition);
+            exoPlayer.seekTo(exoPlayerPosition);
         }
     }
 
