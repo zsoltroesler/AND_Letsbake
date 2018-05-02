@@ -62,7 +62,13 @@ public class StepsActivity extends AppCompatActivity {
 
         ButterKnife.bind(this);
 
-        if (savedInstanceState == null) {
+        if (savedInstanceState != null) {
+            step = savedInstanceState.getParcelable(CURRENT_STEP);
+            currentStep = savedInstanceState.getInt(CURRENT_STEP_ID);
+            stepsList = savedInstanceState.getParcelableArrayList(CURRENT_STEPLIST);
+
+            setStepNumber();
+        } else {
             // Get the data from the intent
             Bundle data = getIntent().getExtras();
 
@@ -72,26 +78,11 @@ public class StepsActivity extends AppCompatActivity {
             step = data.getParcelable(STEP_RECIPE_KEY);
             stepId = step.getStepId();
             currentStep = stepId;
-        } else {
-            step = savedInstanceState.getParcelable(CURRENT_STEP);
-            currentStep = savedInstanceState.getInt(CURRENT_STEP_ID);
-            stepsList = savedInstanceState.getParcelableArrayList(CURRENT_STEPLIST);
+
+            setStepNumber();
+
+            setStepFragment(step);
         }
-
-        setStepNumber();
-
-        setStepFragment(step);
-
-//        FragmentManager fragmentManager = getSupportFragmentManager();
-//
-//        RecipeStepsFragment recipeStepsFragment = new RecipeStepsFragment();
-//
-//        recipeStepsFragment.setArguments(data);
-//
-//        fragmentManager.beginTransaction()
-//                .add(R.id.container_recipe_steps, recipeStepsFragment)
-//                .commit();
-
     }
 
     @Override

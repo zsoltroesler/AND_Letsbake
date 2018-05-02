@@ -58,12 +58,7 @@ public class RecipeStepsFragment extends Fragment implements Player.EventListene
     private static final String LOG_TAG = RecipeStepsFragment.class.getSimpleName();
     private static final String PLAYER_POSITION = "exoPlayer position";
 
-
-    private Context context;
-    private ArrayList<Step> stepsList = new ArrayList<>();
     private Step step;
-    private int stepId;
-    private String stepDescription;
     private String stepVideoUrl;
     private String stepThumbnailUrl;
     private Unbinder unbinder;
@@ -86,6 +81,20 @@ public class RecipeStepsFragment extends Fragment implements Player.EventListene
     }
 
     @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        // Get the data from the Bundle object
+        step = getArguments().getParcelable(STEP_RECIPE_KEY);
+        stepVideoUrl = step.getStepVideoUrl();
+        stepThumbnailUrl = step.getStepThumbnailUrl();
+
+        if (savedInstanceState != null) {
+            exoPlayerPosition = savedInstanceState.getLong(PLAYER_POSITION);
+        }
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
@@ -93,42 +102,32 @@ public class RecipeStepsFragment extends Fragment implements Player.EventListene
 
         unbinder = ButterKnife.bind(this, view);
 
-        // Get the data from the Bundle object
-        step = getArguments().getParcelable(STEP_RECIPE_KEY);
-
         getActivity().setTitle(step.getStepShortDescription());
 
         descriptionText.setText(step.getStepDescription());
 
-        stepVideoUrl = step.getStepVideoUrl();
-        stepThumbnailUrl = step.getStepThumbnailUrl();
+        if (!stepVideoUrl.isEmpty()) {
+            // Hide the placeholder image
+            placeholderImage.setVisibility(View.GONE);
 
-        if (savedInstanceState != null) {
-            exoPlayerPosition = savedInstanceState.getLong(PLAYER_POSITION, C.TIME_UNSET);
+            // Initialize the Media Session.
+            initializeMediaSession();
+
+            // Initialize the ExoPlayer.
+            initializePlayer(Uri.parse(stepVideoUrl));
         } else {
-            if (!stepVideoUrl.isEmpty()) {
-                // Hide the placeholder image
-                placeholderImage.setVisibility(View.GONE);
+            // Hide ExoPlayer
+            exoPlayerView.setVisibility(View.GONE);
 
-                // Initialize the Media Session.
-                initializeMediaSession();
-
-                // Initialize the ExoPlayer.
-                initializePlayer(Uri.parse(stepVideoUrl));
-            } else {
-                // Hide ExoPlayer
-                exoPlayerView.setVisibility(View.GONE);
-
-                // Load the corresponding thumbnail image url or if it is empty load the placeholder image
-                Picasso.with(getActivity())
-                        .load(stepThumbnailUrl)
-                        .placeholder(R.drawable.ic_baking_placeholder)
-                        .error(R.drawable.ic_baking_placeholder)
-                        .into(placeholderImage);
-            }
+            // Load the corresponding thumbnail image url or if it is empty load the placeholder image
+            Picasso.with(getActivity())
+                    .load(stepThumbnailUrl)
+                    .placeholder(R.drawable.ic_baking_placeholder)
+                    .error(R.drawable.ic_baking_placeholder)
+                    .into(placeholderImage);
         }
         return view;
-}
+    }
 
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
@@ -196,26 +195,26 @@ public class RecipeStepsFragment extends Fragment implements Player.EventListene
 
     }
 
-/**
- * Media Session Callbacks, where all external clients control the player.
- */
-private class MediaSessionCallback extends MediaSessionCompat.Callback {
-    @Override
-    public void onPlay() {
-        exoPlayer.setPlayWhenReady(true);
-    }
+    /**
+     * Media Session Callbacks, where all external clients control the player.
+     */
+    private class MediaSessionCallback extends MediaSessionCompat.Callback {
+        @Override
+        public void onPlay() {
+            exoPlayer.setPlayWhenReady(true);
+        }
 
-    @Override
-    public void onPause() {
-        exoPlayer.setPlayWhenReady(false);
-    }
+        @Override
+        public void onPause() {
+            exoPlayer.setPlayWhenReady(false);
+        }
 
-    @Override
-    public void onSkipToPrevious() {
-        exoPlayer.seekTo(0);
-    }
+        @Override
+        public void onSkipToPrevious() {
+            exoPlayer.seekTo(0);
+        }
 
-}
+    }
 
     /**
      * Release ExoPlayer.
