@@ -1,43 +1,48 @@
 package com.example.android.letsbake;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.DividerItemDecoration;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.util.Log;
-import android.widget.ScrollView;
 
-import com.example.android.letsbake.adapters.IngredientsAdapter;
-import com.example.android.letsbake.adapters.StepsAdapter;
 import com.example.android.letsbake.fragments.RecipeDetailsFragment;
-import com.example.android.letsbake.fragments.RecipeListFragment;
+import com.example.android.letsbake.fragments.RecipeStepsFragment;
 import com.example.android.letsbake.models.Ingredient;
 import com.example.android.letsbake.models.Recipe;
 import com.example.android.letsbake.models.Step;
 
 import java.util.ArrayList;
 
-import butterknife.BindView;
+import butterknife.BindBool;
 import butterknife.ButterKnife;
 
+import static com.example.android.letsbake.StepsActivity.CURRENT_STEP;
+import static com.example.android.letsbake.StepsActivity.CURRENT_STEP_ID;
+import static com.example.android.letsbake.fragments.RecipeDetailsFragment.STEP_RECIPE_KEY;
 import static com.example.android.letsbake.fragments.RecipeListFragment.DETAILS_RECIPE_KEY;
 
 /**
  * Created by Zsolt on 09.04.2018.
  */
 
-public class DetailsActivity extends AppCompatActivity {
+public class DetailsActivity extends AppCompatActivity implements RecipeDetailsFragment.OnVideoStepClickListener {
 
     /**
      * Tag for the log messages
      */
     private static final String LOG_TAG = DetailsActivity.class.getSimpleName();
 
-    @BindView(R.id.sv_details)
-    ScrollView scrollView;
+    private Recipe recipe;
+    private ArrayList<Ingredient> ingredientList;
+    private ArrayList<Step> stepList;
+    private FragmentManager fragmentManager;
+    private Step step;
+    private int stepId;
 
+    // Track whether to display a two-pane or single-pane UI
+    // A single-pane display refers to phone screens, and two-pane to larger tablet screens
+    @BindBool(R.bool.two_pane_layout)
+    boolean twoPaneLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,16 +52,69 @@ public class DetailsActivity extends AppCompatActivity {
         ButterKnife.bind(this);
 
         Bundle data = getIntent().getExtras();
+        recipe = data.getParcelable(DETAILS_RECIPE_KEY);
+        stepList = recipe.getRecipeStepList();
 
-        FragmentManager fragmentManager = getSupportFragmentManager();
+        fragmentManager = getSupportFragmentManager();
 
-        RecipeDetailsFragment recipeDetailsFragment = new RecipeDetailsFragment();
+        if (savedInstanceState != null){
+            step = savedInstanceState.getParcelable(CURRENT_STEP);
+            stepId = savedInstanceState.getInt(CURRENT_STEP_ID);
+        } else {
+            if (twoPaneLayout) {
 
-        recipeDetailsFragment.setArguments(data);
+                RecipeDetailsFragment recipeDetailsFragment = new RecipeDetailsFragment();
+                data.putParcelable(DETAILS_RECIPE_KEY, recipe);
+                recipeDetailsFragment.setArguments(data);
+                fragmentManager.beginTransaction()
+                        .replace(R.id.container_recipe_details, recipeDetailsFragment)
+                        .commit();
 
-        fragmentManager.beginTransaction()
-                .replace(R.id.container_recipe_details, recipeDetailsFragment)
-                .commit();
+                step = stepList.get(0);
+                stepId = step.getStepId();
 
+                Bundle bundleStep = new Bundle();
+                bundleStep.putParcelable(STEP_RECIPE_KEY, step);
+                RecipeStepsFragment recipeStepsFragment = new RecipeStepsFragment();
+                recipeStepsFragment.setArguments(bundleStep);
+                fragmentManager.beginTransaction()
+                        .replace(R.id.container_recipe_steps_two_pane, recipeStepsFragment)
+                        .commit();
+            } else {
+                RecipeDetailsFragment recipeDetailsFragment = new RecipeDetailsFragment();
+                recipeDetailsFragment.setArguments(data);
+                fragmentManager.beginTransaction()
+                        .replace(R.id.container_recipe_details, recipeDetailsFragment)
+                        .commit();
+            }
+        }
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putParcelable(CURRENT_STEP, step);
+        outState.putInt(CURRENT_STEP_ID, stepId);
+    }
+
+    @Override
+    public void onVideoSelected(int position) {
+        step = stepList.get(position);
+
+        if (twoPaneLayout) {
+            Bundle bundleVideo = new Bundle();
+            bundleVideo.putParcelable(STEP_RECIPE_KEY, step);
+            RecipeStepsFragment recipeStepsFragment = new RecipeStepsFragment();
+            recipeStepsFragment.setArguments(bundleVideo);
+            fragmentManager.beginTransaction()
+                    .replace(R.id.container_recipe_steps_two_pane, recipeStepsFragment)
+                    .commit();
+
+        } else {
+            Intent stepIntent = new Intent(this, StepsActivity.class);
+            stepIntent.putExtra(STEP_RECIPE_KEY, step);
+            stepIntent.putExtra(DETAILS_RECIPE_KEY, recipe);
+            startActivity(stepIntent);
+        }
     }
 }

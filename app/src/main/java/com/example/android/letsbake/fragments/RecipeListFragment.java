@@ -42,7 +42,7 @@ public class RecipeListFragment extends Fragment {
 
     private static final String LOG_TAG = RecipeListFragment.class.getSimpleName();
 
-    public static final String DETAILS_RECIPE_KEY = "recipeDetails";
+    public static final String DETAILS_RECIPE_KEY = "DETAILS_RECIPE_KEY";
 
     private ArrayList<Recipe> recipeList = new ArrayList<>();
     private RecipeAdapter recipeAdapter;

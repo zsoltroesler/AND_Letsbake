@@ -1,15 +1,20 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
+    android:fillViewport="true"
     tools:context="com.example.android.letsbake.fragments.RecipeStepsFragment">
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_margin="@dimen/margin_general">
     <RelativeLayout
         android:id="@+id/rl_player"
         android:layout_width="match_parent"
-        android:layout_height="250dp"
-        android:layout_marginBottom="16dp">
+        android:layout_height="@dimen/video_height"
+        android:layout_marginBottom="@dimen/margin_general">
 
     <com.google.android.exoplayer2.ui.SimpleExoPlayerView
         android:id="@+id/player_step"
@@ -21,6 +26,7 @@
         android:id="@+id/iv_step_placeholder"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:padding="@dimen/padding_placeholder_video"
         android:src="@drawable/ic_baking_placeholder"/>
 
 </RelativeLayout>
@@ -30,8 +36,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@drawable/rounded_corner"
-        android:textSize="16sp"
-        android:padding="8dp"
-        />
-
+        android:textSize="@dimen/text_size"
+        android:padding="@dimen/padding_text" />
 </LinearLayout>
+</ScrollView>

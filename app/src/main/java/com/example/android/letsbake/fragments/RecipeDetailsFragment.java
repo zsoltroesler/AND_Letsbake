@@ -1,9 +1,7 @@
 package com.example.android.letsbake.fragments;
 
-import android.content.Intent;
+import android.content.Context;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
@@ -12,20 +10,16 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ScrollView;
-import android.widget.Toast;
+
 
 import com.example.android.letsbake.R;
-import com.example.android.letsbake.StepsActivity;
 import com.example.android.letsbake.adapters.IngredientsAdapter;
 import com.example.android.letsbake.adapters.StepsAdapter;
 import com.example.android.letsbake.models.Ingredient;
 import com.example.android.letsbake.models.Recipe;
 import com.example.android.letsbake.models.Step;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
-import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -40,7 +34,6 @@ import static com.example.android.letsbake.fragments.RecipeListFragment.DETAILS_
 public class RecipeDetailsFragment extends Fragment {
 
     private static final String LOG_TAG = RecipeDetailsFragment.class.getSimpleName();
-
     public static final String STEP_RECIPE_KEY = "stepDetails";
 
     private ArrayList<Ingredient> ingredientList = new ArrayList<>();
@@ -56,8 +49,31 @@ public class RecipeDetailsFragment extends Fragment {
     @BindView(R.id.rv_recipe_steps)
     RecyclerView stepsRecyclerView;
 
+    // Define a new interface OnVideoStepClickListener that triggers a callback in the host activity
+    OnVideoStepClickListener callback;
+
+    // OnVideoStepClickListener interface, calls a method in the host activity named onImageSelected
+    public interface OnVideoStepClickListener {
+        void onVideoSelected(int position);
+    }
+
     // Required empty public constructor
     public RecipeDetailsFragment() {
+    }
+
+    // Override onAttach to make sure that the container activity has implemented the callback
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+
+        // This makes sure that the host activity has implemented the callback interface
+        // If not, it throws an exception
+        try {
+            callback = (OnVideoStepClickListener) context;
+        } catch (ClassCastException e) {
+            throw new ClassCastException(context.toString()
+                    + " must implement OnVideoStepClickListener");
+        }
     }
 
     @Override
@@ -86,12 +102,8 @@ public class RecipeDetailsFragment extends Fragment {
         stepsAdapter = new StepsAdapter(stepsList, new StepsAdapter.OnStepClickListener() {
             @Override
             public void onItemClick(Step step) {
-                Toast.makeText(getContext(), step.getStepShortDescription().toString(), Toast.LENGTH_SHORT).show();
-                Intent stepsIntent = new Intent(getActivity(), StepsActivity.class);
-                stepsIntent.putExtra(STEP_RECIPE_KEY, step);
-                stepsIntent.putExtra(DETAILS_RECIPE_KEY, recipe);
-
-                startActivity(stepsIntent);
+                int selectedStep = step.getStepId();
+                callback.onVideoSelected(selectedStep);
             }
         });
         stepsRecyclerView.setAdapter(stepsAdapter);
@@ -115,6 +127,7 @@ public class RecipeDetailsFragment extends Fragment {
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
     }
+
 
     // Binding reset
     @Override public void onDestroyView() {

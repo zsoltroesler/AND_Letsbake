@@ -3,12 +3,9 @@ package com.example.android.letsbake;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.widget.ImageButton;
-import android.widget.ScrollView;
 import android.widget.TextView;
 
-import com.example.android.letsbake.fragments.RecipeDetailsFragment;
 import com.example.android.letsbake.fragments.RecipeStepsFragment;
 import com.example.android.letsbake.models.Recipe;
 import com.example.android.letsbake.models.Step;
@@ -32,9 +29,9 @@ public class StepsActivity extends AppCompatActivity {
      * Tag for the log messages
      */
     private static final String LOG_TAG = StepsActivity.class.getSimpleName();
-    private static final String CURRENT_STEP = "current step";
-    private static final String CURRENT_STEP_ID = "current step ID";
-    private static final String CURRENT_STEPLIST = "current step list";
+    public static final String CURRENT_STEP = "current step";
+    public static final String CURRENT_STEP_ID = "current step ID";
+    public static final String CURRENT_STEPLIST = "current step list";
 
     private ArrayList<Step> stepsList = new ArrayList<>();
     private Recipe recipe;
@@ -43,8 +40,6 @@ public class StepsActivity extends AppCompatActivity {
 
     private int stepId;
 
-    @BindView(R.id.sv_steps)
-    ScrollView scrollView;
     @BindView(R.id.tv_step)
     TextView stepView;
     @BindString(R.string.step_number)
