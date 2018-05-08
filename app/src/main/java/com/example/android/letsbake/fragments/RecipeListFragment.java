@@ -1,10 +1,16 @@
 package com.example.android.letsbake.fragments;
 
+import android.appwidget.AppWidgetManager;
+import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -20,12 +26,14 @@ import com.example.android.letsbake.DetailsActivity;
 import com.example.android.letsbake.MainActivity;
 import com.example.android.letsbake.R;
 import com.example.android.letsbake.adapters.RecipeAdapter;
+import com.example.android.letsbake.models.Ingredient;
 import com.example.android.letsbake.models.Recipe;
 import com.example.android.letsbake.utils.BakingApiClient;
 import com.example.android.letsbake.utils.BakingApiInterface;
+import com.example.android.letsbake.widget.RecipeWidgetProvider;
+import com.google.gson.Gson;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -33,6 +41,7 @@ import butterknife.Unbinder;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+
 
 /**
  * Created by Zsolt on 09.04.2018.
@@ -42,7 +51,10 @@ public class RecipeListFragment extends Fragment {
 
     private static final String LOG_TAG = RecipeListFragment.class.getSimpleName();
 
-    public static final String DETAILS_RECIPE_KEY = "DETAILS_RECIPE_KEY";
+    public static final String DETAILS_RECIPE_KEY = "Details recipe key";
+    public static final String PREFS_NAME = "SharedPreferences";
+    public static final String RECIPE_NAME = "Recipe name";
+    public static final String RECIPE_INGREDIENTS = "Recipe ingredients";
 
     private ArrayList<Recipe> recipeList = new ArrayList<>();
     private RecipeAdapter recipeAdapter;
@@ -73,8 +85,7 @@ public class RecipeListFragment extends Fragment {
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
     }
-
-
+    
     private void makeRetrofitCall() {
         // To instantiate the BakingApiClient
         BakingApiInterface bakingApiService =
@@ -93,10 +104,22 @@ public class RecipeListFragment extends Fragment {
                     recipeAdapter = new RecipeAdapter(recipeList, new RecipeAdapter.OnItemClickListener() {
                         @Override
                         public void onItemClick(Recipe recipe) {
-                            Toast.makeText(getContext(), recipe.getRecipeName().toString(), Toast.LENGTH_SHORT).show();
                             Intent detailsIntent = new Intent(getActivity(), DetailsActivity.class);
                             detailsIntent.putExtra(DETAILS_RECIPE_KEY, recipe);
                             startActivity(detailsIntent);
+
+                            saveIntoSharedPreferences(recipe);
+
+                            // Send a broadcast message to inform AppWidgetProvider that recipe name
+                            // and ingredients list are saved into SharedPreferences
+                            Intent broadcastIntent = new Intent(getActivity(), RecipeWidgetProvider.class);
+                            broadcastIntent.setAction(AppWidgetManager.ACTION_APPWIDGET_UPDATE);
+                            // Use an array and EXTRA_APPWIDGET_IDS instead of AppWidgetManager.EXTRA_APPWIDGET_ID,
+                            // since it seems the onUpdate() is only fired on that:
+                            int[] ids = AppWidgetManager.getInstance(getActivity()).
+                                    getAppWidgetIds(new ComponentName(getActivity(), RecipeWidgetProvider.class));
+                            broadcastIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, ids);
+                            getContext().sendBroadcast(broadcastIntent);
                         }
                     });
                     recyclerView.setLayoutManager(new GridLayoutManager(getContext(), numberOfColumns()));
@@ -116,7 +139,8 @@ public class RecipeListFragment extends Fragment {
     }
 
     // Binding reset
-    @Override public void onDestroyView() {
+    @Override
+    public void onDestroyView() {
         super.onDestroyView();
         unbinder.unbind();
     }
@@ -130,5 +154,28 @@ public class RecipeListFragment extends Fragment {
         int nColumns = width / widthDivider;
         if (nColumns < 2) return 1;
         return nColumns;
+    }
+
+    // Helper method to save recipe name and ingredients list into SharedPreferences, which will be
+    // reused by Widgets
+    private void saveIntoSharedPreferences(Recipe recipe) {
+        SharedPreferences sharedPreferences = getContext().
+                getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
+
+        // Get the recipe name and ingredients list from {@link Recipe} object
+        String recipeName = recipe.getRecipeName();
+        ArrayList<Ingredient> ingredientsList = recipe.getRecipeIngredientList();
+
+        // The following code snippet is from:
+        // http://androidopentutorials.com/android-how-to-store-list-of-values-in-sharedpreferences/
+        // Convert the ingredients ArrayList into JSON String in order to store list of its values
+        // in SharedPreferences
+        Gson gson = new Gson();
+        String jsonIngredients = gson.toJson(ingredientsList);
+
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString(RECIPE_NAME, recipeName);
+        editor.putString(RECIPE_INGREDIENTS, jsonIngredients);
+        editor.apply();
     }
 }

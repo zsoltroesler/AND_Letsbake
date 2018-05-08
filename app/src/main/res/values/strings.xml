@@ -5,10 +5,9 @@
     <string name="ingredient_format">%1$s\u0020\u0020\u0028%2$s\u0020%3$s\u0029</string>
     <string name="step_format">%1$s\u0029\u0020</string>
     <string name="step_number">Step %1$d of %2$d</string>
-
-
     <string name="button_previous">Previous</string>
     <string name="button_next">Next</string>
+    <string name="appwidget_text">Tap here to choose a recipe.</string>
 
     <!--Toast messages-->
     <string name="problem_occurred">Problem occurred.</string>

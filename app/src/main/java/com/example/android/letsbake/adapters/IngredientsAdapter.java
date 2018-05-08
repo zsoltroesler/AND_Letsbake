@@ -94,12 +94,14 @@ public class IngredientsAdapter extends RecyclerView.Adapter<IngredientsAdapter.
     }
 
     // Helper method to capitalize the first character
-    private String capitalizeString (String ingredient) {
+    @NonNull
+    public static String capitalizeString (String ingredient) {
         return ingredient.substring(0, 1).toUpperCase() + ingredient.substring(1);
     }
 
     // Helper method to lowercase the whole String
-    private String lowercaseString (String measure) {
-        return measure.substring(0).toLowerCase();
+    @NonNull
+    public static String lowercaseString (String measure) {
+        return measure.toLowerCase();
     }
 }

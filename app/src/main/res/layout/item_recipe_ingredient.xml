@@ -13,5 +13,4 @@
         android:ellipsize="marquee"
         tools:text="Ingredient"/>
 
-
 </LinearLayout>
