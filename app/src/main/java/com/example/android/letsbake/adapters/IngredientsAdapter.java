@@ -3,18 +3,15 @@ package com.example.android.letsbake.adapters;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.example.android.letsbake.DetailsActivity;
 import com.example.android.letsbake.R;
 import com.example.android.letsbake.models.Ingredient;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -24,11 +21,6 @@ import butterknife.ButterKnife;
  */
 
 public class IngredientsAdapter extends RecyclerView.Adapter<IngredientsAdapter.ViewHolder> {
-
-    /**
-     * Tag for the log messages
-     */
-    private static final String LOG_TAG = IngredientsAdapter.class.getSimpleName();
 
     private Context context;
     private ArrayList<Ingredient> ingredientsList;
@@ -42,7 +34,6 @@ public class IngredientsAdapter extends RecyclerView.Adapter<IngredientsAdapter.
         this.ingredientsList = ingredientsList;
     }
 
-    @NonNull
     @Override
     public IngredientsAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         context = parent.getContext();
@@ -65,7 +56,8 @@ public class IngredientsAdapter extends RecyclerView.Adapter<IngredientsAdapter.
         String ingredientMeasure = lowercaseString(ingredient.getIngredientMeasure());
 
         // Set all 3 ingredient components on ingredient View
-        holder.ingredient.setText(context.getString(R.string.ingredient_format, ingredientIngredient, ingredientQuantity, ingredientMeasure));
+        holder.ingredient.setText(context.getString(R.string.ingredient_format,
+                ingredientIngredient, ingredientQuantity, ingredientMeasure));
     }
 
     @Override

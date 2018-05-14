@@ -35,5 +35,6 @@
         android:background="@drawable/rounded_corner"
         android:padding="@dimen/padding_text"
         android:textSize="@dimen/text_size" />
+
 </LinearLayout>
 

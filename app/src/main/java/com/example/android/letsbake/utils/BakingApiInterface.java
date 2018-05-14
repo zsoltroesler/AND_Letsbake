@@ -8,7 +8,7 @@ import retrofit2.Call;
 import retrofit2.http.GET;
 
 /**
- * This interface defines the Endpoint for network call
+ * This interface defines the endpoint for network call
  * Created by Zsolt on 03.04.2018.
  */
 

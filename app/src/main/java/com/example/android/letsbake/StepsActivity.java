@@ -25,20 +25,14 @@ import static com.example.android.letsbake.fragments.RecipeListFragment.DETAILS_
  */
 
 public class StepsActivity extends AppCompatActivity {
-    /**
-     * Tag for the log messages
-     */
-    private static final String LOG_TAG = StepsActivity.class.getSimpleName();
+
     public static final String CURRENT_STEP = "current step";
     public static final String CURRENT_STEP_ID = "current step ID";
     public static final String CURRENT_STEPLIST = "current step list";
 
     private ArrayList<Step> stepsList = new ArrayList<>();
-    private Recipe recipe;
     private Step step;
     private int currentStep;
-
-    private int stepId;
 
     @BindView(R.id.tv_step)
     TextView stepView;
@@ -67,11 +61,11 @@ public class StepsActivity extends AppCompatActivity {
             // Get the data from the intent
             Bundle data = getIntent().getExtras();
 
-            recipe = data.getParcelable(DETAILS_RECIPE_KEY);
+            Recipe recipe = data.getParcelable(DETAILS_RECIPE_KEY);
             stepsList = recipe.getRecipeStepList();
 
             step = data.getParcelable(STEP_RECIPE_KEY);
-            stepId = step.getStepId();
+            int stepId = step.getStepId();
             currentStep = stepId;
 
             setStepNumber();

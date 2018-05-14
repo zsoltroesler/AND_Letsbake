@@ -1,7 +1,6 @@
 package com.example.android.letsbake.fragments;
 
 
-import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -9,7 +8,6 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,31 +16,23 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.example.android.letsbake.R;
-import com.example.android.letsbake.models.Recipe;
 import com.example.android.letsbake.models.Step;
-import com.google.android.exoplayer2.C;
-import com.google.android.exoplayer2.DefaultLoadControl;
 import com.google.android.exoplayer2.ExoPlaybackException;
-import com.google.android.exoplayer2.ExoPlayer;
 import com.google.android.exoplayer2.ExoPlayerFactory;
-import com.google.android.exoplayer2.LoadControl;
 import com.google.android.exoplayer2.PlaybackParameters;
 import com.google.android.exoplayer2.Player;
 import com.google.android.exoplayer2.SimpleExoPlayer;
 import com.google.android.exoplayer2.Timeline;
-import com.google.android.exoplayer2.extractor.DefaultExtractorsFactory;
 import com.google.android.exoplayer2.source.ExtractorMediaSource;
 import com.google.android.exoplayer2.source.MediaSource;
 import com.google.android.exoplayer2.source.TrackGroupArray;
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector;
 import com.google.android.exoplayer2.trackselection.TrackSelectionArray;
 import com.google.android.exoplayer2.trackselection.TrackSelector;
-import com.google.android.exoplayer2.ui.SimpleExoPlayerView;
+import com.google.android.exoplayer2.ui.PlayerView;
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
 import com.google.android.exoplayer2.util.Util;
 import com.squareup.picasso.Picasso;
-
-import java.util.ArrayList;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -57,20 +47,18 @@ public class RecipeStepsFragment extends Fragment implements Player.EventListene
 
     private static final String LOG_TAG = RecipeStepsFragment.class.getSimpleName();
     private static final String PLAYER_POSITION = "exoPlayer position";
+    private static final String PLAYER_STATE = "exoPlayer state";
 
     private Step step;
     private String stepVideoUrl;
     private String stepThumbnailUrl;
     private Unbinder unbinder;
     private SimpleExoPlayer exoPlayer;
-    private MediaSessionCompat mediaSession;
-    private PlaybackStateCompat.Builder playbackStateBuilder;
     private long exoPlayerPosition;
+    private boolean playWhenReady = true;
 
-    @BindView(R.id.rl_player)
-    RelativeLayout playerRelativeLayout;
     @BindView(R.id.player_step)
-    SimpleExoPlayerView exoPlayerView;
+    PlayerView exoPlayerView;
     @BindView(R.id.iv_step_placeholder)
     ImageView placeholderImage;
     @BindView(R.id.tv_step_description)
@@ -91,6 +79,7 @@ public class RecipeStepsFragment extends Fragment implements Player.EventListene
 
         if (savedInstanceState != null) {
             exoPlayerPosition = savedInstanceState.getLong(PLAYER_POSITION);
+            playWhenReady = savedInstanceState.getBoolean(PLAYER_STATE);
         }
     }
 
@@ -133,6 +122,7 @@ public class RecipeStepsFragment extends Fragment implements Player.EventListene
     public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putLong(PLAYER_POSITION, exoPlayerPosition);
+        outState.putBoolean(PLAYER_STATE, playWhenReady);
     }
 
     /**
@@ -150,10 +140,10 @@ public class RecipeStepsFragment extends Fragment implements Player.EventListene
             exoPlayer.addListener(this);
             // Prepare the MediaSource.
             String userAgent = Util.getUserAgent(getActivity(), LOG_TAG);
-            MediaSource mediaSource = new ExtractorMediaSource(videoUri, new DefaultDataSourceFactory(
-                    getActivity(), userAgent), new DefaultExtractorsFactory(), null, null);
+            MediaSource mediaSource = new ExtractorMediaSource.Factory(new DefaultDataSourceFactory(getActivity(), userAgent))
+                    .createMediaSource(videoUri);
             exoPlayer.prepare(mediaSource);
-            exoPlayer.setPlayWhenReady(true);
+            exoPlayer.setPlayWhenReady(playWhenReady);
             exoPlayer.seekTo(exoPlayerPosition);
         }
     }
@@ -166,7 +156,7 @@ public class RecipeStepsFragment extends Fragment implements Player.EventListene
     private void initializeMediaSession() {
 
         // Create a MediaSessionCompat.
-        mediaSession = new MediaSessionCompat(getActivity(), LOG_TAG);
+        MediaSessionCompat mediaSession = new MediaSessionCompat(getActivity(), LOG_TAG);
 
         // Enable callbacks from MediaButtons and TransportControls.
         mediaSession.setFlags(
@@ -177,7 +167,7 @@ public class RecipeStepsFragment extends Fragment implements Player.EventListene
         mediaSession.setMediaButtonReceiver(null);
 
         // Set an initial PlaybackState with ACTION_PLAY, so media buttons can start the player.
-        playbackStateBuilder = new PlaybackStateCompat.Builder()
+        PlaybackStateCompat.Builder playbackStateBuilder = new PlaybackStateCompat.Builder()
                 .setActions(
                         PlaybackStateCompat.ACTION_PLAY |
                                 PlaybackStateCompat.ACTION_PAUSE |
@@ -240,6 +230,7 @@ public class RecipeStepsFragment extends Fragment implements Player.EventListene
         super.onPause();
         if (exoPlayer != null) {
             exoPlayerPosition = exoPlayer.getCurrentPosition();
+            playWhenReady = exoPlayer.getPlayWhenReady();
             releasePlayer();
         }
     }

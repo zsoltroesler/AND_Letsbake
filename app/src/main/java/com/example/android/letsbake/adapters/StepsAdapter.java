@@ -12,7 +12,6 @@ import com.example.android.letsbake.R;
 import com.example.android.letsbake.models.Step;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -43,14 +42,14 @@ public class StepsAdapter extends RecyclerView.Adapter<StepsAdapter.ViewHolder> 
     }
 
     @Override
-    public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public StepsAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         context = parent.getContext();
         return new StepsAdapter.ViewHolder(LayoutInflater.from(context)
                 .inflate(R.layout.item_recipe_step, parent, false));
     }
 
     @Override
-    public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull StepsAdapter.ViewHolder holder, int position) {
 
         final Step step = stepsList.get(position);
 
@@ -69,7 +68,6 @@ public class StepsAdapter extends RecyclerView.Adapter<StepsAdapter.ViewHolder> 
                 listener.onItemClick(step);
             }
         });
-
     }
 
     @Override

@@ -16,7 +16,7 @@
         android:layout_height="@dimen/video_height"
         android:layout_marginBottom="@dimen/margin_general">
 
-    <com.google.android.exoplayer2.ui.SimpleExoPlayerView
+    <com.google.android.exoplayer2.ui.PlayerView
         android:id="@+id/player_step"
         android:layout_width="match_parent"
         android:layout_height="match_parent"

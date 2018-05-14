@@ -6,16 +6,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -30,6 +25,7 @@ import com.example.android.letsbake.models.Ingredient;
 import com.example.android.letsbake.models.Recipe;
 import com.example.android.letsbake.utils.BakingApiClient;
 import com.example.android.letsbake.utils.BakingApiInterface;
+import com.example.android.letsbake.utils.SimpleIdlingResource;
 import com.example.android.letsbake.widget.RecipeWidgetProvider;
 import com.google.gson.Gson;
 
@@ -49,8 +45,6 @@ import retrofit2.Response;
 
 public class RecipeListFragment extends Fragment {
 
-    private static final String LOG_TAG = RecipeListFragment.class.getSimpleName();
-
     public static final String DETAILS_RECIPE_KEY = "Details recipe key";
     public static final String PREFS_NAME = "SharedPreferences";
     public static final String RECIPE_NAME = "Recipe name";
@@ -58,6 +52,10 @@ public class RecipeListFragment extends Fragment {
 
     private ArrayList<Recipe> recipeList = new ArrayList<>();
     private RecipeAdapter recipeAdapter;
+
+    // This will be null in production
+    @Nullable
+    private SimpleIdlingResource simpleIdlingResource;
 
     @BindView(R.id.rv_recipe_list)
     RecyclerView recyclerView;
@@ -77,17 +75,23 @@ public class RecipeListFragment extends Fragment {
 
         progressBar.setVisibility(View.VISIBLE);
 
+        simpleIdlingResource = (SimpleIdlingResource) new MainActivity().getIdlingResource();
+
         makeRetrofitCall();
         return view;
     }
 
-    @Override
-    public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-    }
-    
     private void makeRetrofitCall() {
-        // To instantiate the BakingApiClient
+        /**
+         * If the idle state is true, Espresso can perform the next action.
+         * If the idle state is false, Espresso will wait until it is true before
+         * performing the next action.
+         */
+        if (simpleIdlingResource != null) {
+            simpleIdlingResource.setIdleState(false);
+        }
+
+        // Instantiate the BakingApiClient
         BakingApiInterface bakingApiService =
                 BakingApiClient.getClient().create(BakingApiInterface.class);
 
@@ -126,6 +130,9 @@ public class RecipeListFragment extends Fragment {
                     recyclerView.setAdapter(recipeAdapter);
                     recipeAdapter.setRecipeList(recipeList);
                     recipeAdapter.notifyDataSetChanged();
+                    if (simpleIdlingResource != null) {
+                        simpleIdlingResource.setIdleState(true);
+                    }
                 } else {
                     Toast.makeText(getContext(), R.string.problem_occurred, Toast.LENGTH_SHORT).show();
                 }

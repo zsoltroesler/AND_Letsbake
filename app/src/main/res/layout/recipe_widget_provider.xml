@@ -10,13 +10,13 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/colorPrimary"
-        android:padding="8dp">
+        android:padding="@dimen/padding_text">
 
         <!--Image is designed by Freepik, www.freepik.com-->
         <ImageView
             android:id="@+id/iv_widget"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
+            android:layout_width="@dimen/widget_image_size"
+            android:layout_height="@dimen/widget_image_size"
             android:src="@drawable/ic_baking_widget" />
 
         <TextView
@@ -40,7 +40,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:textColor="@android:color/white"
-            android:padding="8dp"
+            android:padding="@dimen/padding_text"
             android:text="@string/appwidget_text"
             android:textSize="@dimen/text_size" />
 

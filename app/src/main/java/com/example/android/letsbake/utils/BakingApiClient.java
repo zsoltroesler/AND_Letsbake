@@ -7,12 +7,16 @@ import retrofit2.converter.gson.GsonConverterFactory;
  * Created by Zsolt on 04.04.2018.
  */
 
-public class BakingApiClient {
+// This class will be never extended.
+public final class BakingApiClient {
 
     private static Retrofit retrofit = null;
 
     private static final String BASE_URL =
             "https://d17h27t6h515a5.cloudfront.net/topher/2017/May/59121517_baking/";
+
+    // This class will never be instantiated therefore constructor is suppressed.
+    private BakingApiClient() {}
 
     // Send network request to the API using BASE_URL
     public static Retrofit getClient() {

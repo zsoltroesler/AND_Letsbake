@@ -2,12 +2,12 @@ package com.example.android.letsbake;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.VisibleForTesting;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 
 import com.example.android.letsbake.fragments.RecipeDetailsFragment;
 import com.example.android.letsbake.fragments.RecipeStepsFragment;
-import com.example.android.letsbake.models.Ingredient;
 import com.example.android.letsbake.models.Recipe;
 import com.example.android.letsbake.models.Step;
 
@@ -27,13 +27,7 @@ import static com.example.android.letsbake.fragments.RecipeListFragment.DETAILS_
 
 public class DetailsActivity extends AppCompatActivity implements RecipeDetailsFragment.OnVideoStepClickListener {
 
-    /**
-     * Tag for the log messages
-     */
-    private static final String LOG_TAG = DetailsActivity.class.getSimpleName();
-
     private Recipe recipe;
-    private ArrayList<Ingredient> ingredientList;
     private ArrayList<Step> stepList;
     private FragmentManager fragmentManager;
     private Step step;
@@ -116,5 +110,14 @@ public class DetailsActivity extends AppCompatActivity implements RecipeDetailsF
             stepIntent.putExtra(DETAILS_RECIPE_KEY, recipe);
             startActivity(stepIntent);
         }
+    }
+
+    // This method serves testing purposes and followed the instruction from:
+    // https://github.com/googlesamples/android-testing Espresso Samples -> IntentsBasicSample
+    @VisibleForTesting
+    static Intent createResultData(Recipe recipe) {
+        final Intent resultData = new Intent();
+        resultData.putExtra(DETAILS_RECIPE_KEY, recipe);
+        return resultData;
     }
 }

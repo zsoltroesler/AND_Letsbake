@@ -24,10 +24,7 @@
 
             <ImageButton
                 android:id="@+id/bt_previous"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:background="@color/colorPrimary"
+                style="@style/StepButton"
                 android:contentDescription="@string/button_previous"
                 android:src="@drawable/exo_controls_previous" />
 
@@ -35,17 +32,14 @@
                 android:id="@+id/tv_step"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_margin="16dp"
+                android:layout_margin="@dimen/margin_general"
                 android:textColor="@color/colorPrimaryDark"
-                android:textSize="18sp"
+                android:textSize="@dimen/text_step_size"
                 tools:text="Step 1 of 10" />
 
             <ImageButton
                 android:id="@+id/bt_next"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:background="@color/colorPrimary"
+                style="@style/StepButton"
                 android:contentDescription="@string/button_next"
                 android:src="@drawable/exo_controls_next" />
 

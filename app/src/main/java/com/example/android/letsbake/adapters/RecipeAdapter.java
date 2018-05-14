@@ -1,6 +1,7 @@
 package com.example.android.letsbake.adapters;
 
 import android.content.Context;
+import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -22,8 +23,6 @@ import butterknife.ButterKnife;
  */
 
 public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.ViewHolder> {
-
-    private static final String LOG_TAG = RecipeAdapter.class.getSimpleName();
 
     public interface OnItemClickListener {
         void onItemClick(Recipe recipe);
@@ -52,16 +51,15 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.ViewHolder
     }
 
     @Override
-    public void onBindViewHolder(RecipeAdapter.ViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull RecipeAdapter.ViewHolder holder, int position) {
+
         final Recipe recipe = recipeList.get(position);
 
-        // Set the corresponding cake image
-
+        // Get and set the corresponding recipe name
         String recipeName = recipe.getRecipeName();
-        // Set the corresponding recipe name
         holder.recipeName.setText(recipeName);
 
-        // Set the corresponding cake image
+        // Get and set the corresponding cake image
         String recipeImage = recipe.getRecipeImage();
         if (!recipeImage.isEmpty()){
             Picasso.with(holder.itemView.getContext())
@@ -69,9 +67,8 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.ViewHolder
                     .into(holder.cakeImage);
         } else holder.cakeImage.setImageResource(imagePlaceholder(recipeName));
 
-        // Get the corresponding amount of servings
+        // Get and set the corresponding amount of servings
         int recipeServings = recipe.getRecipeServing();
-        // Set the corresponding recipe serving
         holder.recipeServing.setText(context.getString(R.string.servings, recipeServings) );
 
         // Set the OnClickListener on a single recipe
@@ -115,7 +112,7 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.ViewHolder
 
     // Helper method to set a corresponding image to the @Recipe if the there is no image URL
     private int imagePlaceholder (String cakeName) {
-        int imageResourceId = 0;
+        int imageResourceId;
 
         // All these images are designed by Freepik, www.freepik.com
         switch (cakeName) {

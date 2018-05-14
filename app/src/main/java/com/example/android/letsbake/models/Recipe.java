@@ -6,7 +6,6 @@ import android.os.Parcelable;
 import com.google.gson.annotations.SerializedName;
 
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by Zsolt on 03.04.2018.
@@ -79,10 +78,6 @@ public class Recipe implements Parcelable {
 
     public String getRecipeName() {
         return recipeName;
-    }
-
-    public void setRecipeName(String recipeName) {
-        this.recipeName = recipeName;
     }
 
     public int getRecipeServing() { return recipeServing; }
