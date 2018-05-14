@@ -19,7 +19,7 @@ In this project you will:
 Your task is to create a Android Baking App that will allow Udacity’s resident baker-in-chief, Miriam, to share her recipes with the world.
 You will create an app that will allow a user to select a recipe and see video-guided steps for how to complete it.
 
-Tags: responsive desing - Master Detail Flow, third partty libraries (RetroFit, ButterKnife, Picasso), ExoPlayer, Espresso UI test, Widget
+Tags: responsive design - Master Detail Flow, third party libraries (RetroFit, ButterKnife, Picasso), ExoPlayer, Espresso UI test, Widget
 
 ![mainscreen300](https://user-images.githubusercontent.com/23049871/39991756-d1f4ab86-5770-11e8-8387-185feb7d23a5.jpg)
 ![nutellapie_phone300](https://user-images.githubusercontent.com/23049871/39991774-dffbef96-5770-11e8-89f3-053b386fcc6d.jpg)
